@@ -1,143 +1,273 @@
 <!DOCTYPE html>
-
-<html lang ="en-us">
-
+<html>
 <head>
+<title>Programming Club Society</title>
+<meta name="description" content="Offical programming club society website">
+<meta http-equiv="content-type" content="text/html;charset=UTF-8">
+<meta name="keywords" content="programming, club, projects, news">
+<meta name="author" content="David Schmitt">
 
-	<style>
+<style>
+@import url(http://fonts.googleapis.com/css?family=Ubuntu);
+*{outline: none;}
 
-	h1{text-align:center;}
+* {
+  box-sizing: border-box; 
+}
 
-	h2{float:left;}
+html {
+  background: url(http://vaporwave.co/wp-content/uploads/2016/04/vaporwave-door.gif) no-repeat center center fixed; 
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  background-color: black;
+}
 
-	body{
+html, body {
+  font-size: 12pt;
+  font-family: Roboto, Helvetica, Arial, sans-serif;
+  line-height: 180%; 
+  color: white;
+}
 
-		background-color:#444444;
+div {
+  height: 90%; 
+}
 
-		color:#FFDDBB;}
+canvas {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0; 
+}
 
-		.mainBod{
+body {
+	background-color: black;
+	font-family:"Ubuntu",monospace;
+	margin:0;
+}
 
-			text-align:top-right;
+.links {
+ 	left: 1%;
+ 	top: 1%;
+ 	width: 22%;
+ 	position: absolute;
+ 	overflow: auto;
+}
 
-			float:center-right;
+.main {
+	top: 2%;
+	left: 24%;
+	height: 70%;
+	width: 70%;
+	overflow: auto;
+	position: absolute;
+}
 
-		}
+.bottom {
+   bottom: 0%;
+   left: 30%;
+   position: absolute;
+}
 
-		.sidebar{
+a {
+  text-decoration: none;
+  color: white;
+  background-color: transparent;
+}
 
-			float:top-left;
+.p {
+	bottom: 0%;
+	right: 2%;
+	height: 30%;
+	position: absolute;
+}
 
-			margin:0;
+audio {
+	position: fixed;
+	top: 0;
+	right: 0;
+}
 
-			padding:0;
+a:link {
+    text-decoration: none;
+    padding: 5px 5px 5px 5px;
+    border-radius: 1px;
+}
 
-		}
+a:visited {
+    text-decoration: none;
+}
 
-		.footer{
+a:hover {
+    text-decoration: none;
+    color: black;
+    transition: 0.5s ease;
+    background-color: white;
+}
 
-			position:fixed;
+a:active {
+    text-decoration: none;
+}
 
-			bottom:0;
+.m {
+	position: absolute;
+	bottom: 0;
+	left: 0%;
+}
 
-			left:0;
 
-			width:1920px;
+</style>
 
-			border: 3px solid #FFDDBB;
+<script>
+var canvasDots = function() {
+    var canvas = document.querySelector('canvas'),
+        ctx = canvas.getContext('2d'),
+        colorDot = 'gray',
+        color = 'white';
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    canvas.style.display = 'block';
+    ctx.fillStyle = colorDot;
+    ctx.lineWidth = .1;
+    ctx.strokeStyle = color;
 
-		}
+    var mousePosition = {
+        x: 30 * canvas.width / 100,
+        y: 30 * canvas.height / 100
+    };
 
-		ul{
+    var dots = {
+        nb: 600,
+        distance: 60,
+        d_radius: 100,
+        array: []
+    };
 
-			list-style-type:none;
+    function Dot(){
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
 
-			margin:0;
+        this.vx = -.1 + Math.random();
+        this.vy = -.1 + Math.random();
 
-			padding:3em;
+        this.radius = Math.random();
+    }
 
-			width:3em;
+    Dot.prototype = {
+        create: function(){
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+            ctx.fill();
+        },
 
-			overflow:hidden:
+        animate: function(){
+            for(i = 0; i < dots.nb; i++){
 
-		}
+                var dot = dots.array[i];
 
-		a{
+                if(dot.y < 0 || dot.y > canvas.height){
+                    dot.vx = dot.vx;
+                    dot.vy = - dot.vy;
+                }
+                else if(dot.x < 0 || dot.x > canvas.width){
+                    dot.vx = - dot.vx;
+                    dot.vy = dot.vy;
+                }
+                dot.x += dot.vx;
+                dot.y += dot.vy;
+            }
+        },
 
-			color: #FFDDBB;
+        line: function(){
+            for(i = 0; i < dots.nb; i++){
+                for(j = 0; j < dots.nb; j++){
+                    i_dot = dots.array[i];
+                    j_dot = dots.array[j];
 
-			text-decoration: none;
+                    if((i_dot.x - j_dot.x) < dots.distance && (i_dot.y - j_dot.y) < dots.distance && (i_dot.x - j_dot.x) > - dots.distance && (i_dot.y - j_dot.y) > - dots.distance){
+                        if((i_dot.x - mousePosition.x) < dots.d_radius && (i_dot.y - mousePosition.y) < dots.d_radius && (i_dot.x - mousePosition.x) > - dots.d_radius && (i_dot.y - mousePosition.y) > - dots.d_radius){
+                            ctx.beginPath();
+                            ctx.moveTo(i_dot.x, i_dot.y);
+                            ctx.lineTo(j_dot.x, j_dot.y);
+                            ctx.stroke();
+                            ctx.closePath();
+                        }
+                    }
+                }
+            }
+        }
+    };
 
-		}
+    function createDots(){
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        for(i = 0; i < dots.nb; i++){
+            dots.array.push(new Dot());
+            dot = dots.array[i];
 
-		li a {
+            dot.create();
+        }
 
-               
+        dot.line();
+        dot.animate();
+    }
 
-			display: block;
+    window.onmousemove = function(parameter) {
+        mousePosition.x = parameter.pageX;
+        mousePosition.y = parameter.pageY;
+    }
 
-			text-align: left;
+    mousePosition.x = window.innerWidth / 2;
+    mousePosition.y = window.innerHeight / 2;
 
-			padding: 1.5em;
+    setInterval(createDots, 1000/30);
+};
 
-			text-decoration: none;
-
-		}
-
-               
-
-		a:hover {
-
-			color: #FFFFFF;
-
-		}
-
-	</style>
-
-</head>
-
- 
+window.onload = function() {
+    canvasDots();
+};
+</script>
 
 <body>
 
-	<h1>Programming_club</h1>
 
-	<div class ="sidebar">
 
-		<h2>Minimal_sideBar</h2>       
+ <canvas class='connecting-dots'></canvas>
 
-		<ul>
+ <div class="links">
+  <font style="font-size:14pt;">Internal</font> <br>
+  &nbsp; <a href="#about">+ about</a> <br>
+  &nbsp; <a href="#featured">+ featured</a> <br>
+  &nbsp; <a href="#members">+ members</a> <br>
+  &nbsp; <a href="#alumi">+ ex_members</a> <br>
+  &nbsp; <a href="#contact">+ contact</a> <br>
+  <font style="font-size:14pt;">External</font> <br>
+  &nbsp; <a href="http://deadhobosociety.carlsensei.com/tfj/">+ tfj</a> <br>
+  &nbsp; <a href="https://www.reddit.com/r/gssm/">+ reddit</a> <br>
 
-			<li><a href="#about">>About</a></li>
+ </div>
 
-			<li><a href="#recent_posts">>Recent_Posts</a></li>
+ <div class="main">
 
-			<li><a href="#featured_projects">>Featured_Projects</a></li>
+ 	<font style="font-size: 16pt">>maintext</font><br>
+ 	maintext
 
-			<li><a href="#members">>Members</a></li>
 
-			<li><a href="#dead_members">>Dead_Members</a></li>
+ </div>
 
-			<li><a href="#contact_us">>Contact_Us</a></li>
+ <img class="p" src="http://funsubstance.com/uploads/gif/215/215926.gif">
 
-		</ul>
-
-	</div>
-
-	<div class = "mainBod">
-
-		<h3>Post One: 11/30/16: Test</h3>
-
-		<p>This is a test of the emergency broadcast system.</p>
-
-	</div>
-
-	<div class = "footer">
-
-		&copy Programming Club 2016 <a href="github.com">GithubLink</a>
-
-	</div>
+ <audio id="audio" style="display:none;" src="https://archive.org/download/critique_practical_0810_librivox/critiquepracticalreason_13_kant_64kb.mp3" controls autoplay loop onloadeddata="cancer()">
+  <script>
+    function cancer() {
+        var myAudio = document.getElementById("audio");
+        myAudio.volume = 0.2;
+    }
+  </script>
+ 
 
 </body>
-
-</html>
